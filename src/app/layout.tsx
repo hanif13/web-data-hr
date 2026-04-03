@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ระบบฐานข้อมูลบุคลากรและทำเนียบค่าย",
+  title: "fityatulhaq",
   description: "Modern Personnel and Camp Management System",
 };
 
