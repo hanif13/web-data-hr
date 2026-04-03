@@ -5,7 +5,7 @@ import { PAGES, NAV_GROUPS, MOCK_DATA, Person, PageConfig } from '@/lib/mock-dat
 import {
   Phone, Mail, MessageCircle, MapPin, Cake,
   Wrench, FileText, Plus, Trash2, Search, Filter, X,
-  Users, Lock, LogOut
+  Users, Lock, LogOut, Eye, EyeOff
 } from 'lucide-react';
 
 const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || '';
@@ -22,6 +22,7 @@ export default function Dashboard() {
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authPassword, setAuthPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
@@ -280,110 +281,176 @@ export default function Dashboard() {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: radial-gradient(circle at top left, #f8fafc 0%, #eff6ff 50%, #e2e8f0 100%);
             z-index: 9999;
             padding: 20px;
+            overflow: hidden;
+          }
+          .login-screen-container::before {
+            content: '';
+            position: absolute;
+            width: 140%;
+            height: 140%;
+            background: url("https://www.transparenttextures.com/patterns/cubes.png");
+            opacity: 0.03;
+            animation: bgScroll 60s linear infinite;
+          }
+          @keyframes bgScroll {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(0, 0); }
           }
           .login-card {
             width: 100%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 32px;
+            padding: 48px;
+            box-shadow: 
+              0 20px 25px -5px rgba(0, 0, 0, 0.05),
+              0 10px 10px -5px rgba(0, 0, 0, 0.02),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.5);
             text-align: center;
-            animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: loginEntrance 1s cubic-bezier(0.16, 1, 0.3, 1), cardFloat 8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+            position: relative;
           }
-          @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+          @keyframes loginEntrance {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          @keyframes cardFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
           }
           .login-logo {
-            width: 64px;
-            height: 64px;
+            width: 72px;
+            height: 72px;
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            border-radius: 18px;
+            border-radius: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 24px;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+            margin: 0 auto 28px;
+            box-shadow: 0 12px 20px -5px rgba(37, 99, 235, 0.35);
+            position: relative;
+          }
+          .login-logo::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            opacity: 0.2;
+            z-index: -1;
+            filter: blur(8px);
           }
           .login-title {
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
+            color: #1e293b;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
           }
           .login-subtitle {
-            color: #94a3b8;
-            font-size: 14px;
-            margin-bottom: 32px;
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 40px;
+            font-weight: 500;
+            line-height: 1.5;
           }
           .login-input-group {
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
           }
           .login-input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 14px 16px 14px 44px;
-            color: white;
+            background: #f1f5f9;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 16px 48px 16px 48px;
+            color: #1e293b;
             font-size: 16px;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             outline: none;
-            letter-spacing: 0.1em;
+            font-weight: 500;
           }
           .login-input:focus {
-            background: rgba(255, 255, 255, 0.08);
+            background: white;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
           }
           .login-icon {
             position: absolute;
-            left: 14px;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #64748b;
+            color: #94a3b8;
+            transition: color 0.3s;
+          }
+          .login-input:focus + .login-icon {
+            color: #3b82f6;
+          }
+          .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+          }
+          .password-toggle:hover {
+            color: #3b82f6;
+            background: #eff6ff;
           }
           .login-btn {
             width: 100%;
-            background: #3b82f6;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 14px;
+            border-radius: 16px;
+            padding: 16px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
           }
           .login-btn:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+            filter: brightness(1.05);
           }
           .login-btn:active {
             transform: translateY(0);
           }
           .error-msg {
             color: #ef4444;
-            font-size: 13px;
-            margin-top: 12px;
+            font-size: 14px;
+            margin-top: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
+            padding: 10px;
+            background: #fef2f2;
+            border-radius: 12px;
             animation: shake 0.4s;
+            font-weight: 600;
           }
           @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
           }
         `}</style>
 
@@ -392,13 +459,12 @@ export default function Dashboard() {
             <Lock color="white" size={32} />
           </div>
           <h1 className="login-title">ระบบฐานข้อมูล</h1>
-          <p className="login-subtitle">กรุณาใส่รหัสผ่านเพื่อเข้าสู่ระบบ</p>
+          <p className="login-subtitle">ระบุรหัสผ่านเพื่อเข้าใช้งานระบบจัดการข้อมูล</p>
 
           <form onSubmit={handleLogin}>
             <div className="login-input-group">
-              <Lock className="login-icon" size={18} />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="login-input"
                 placeholder="ระบุรหัสผ่าน..."
                 value={authPassword}
@@ -406,6 +472,14 @@ export default function Dashboard() {
                 autoFocus
                 required
               />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
 
             <button type="submit" className="login-btn">
