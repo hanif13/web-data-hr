@@ -5,7 +5,7 @@ import { PAGES, NAV_GROUPS, MOCK_DATA, Person, PageConfig } from '@/lib/mock-dat
 import {
   Phone, Mail, MessageCircle, MapPin, Cake,
   Wrench, FileText, Plus, Trash2, Search, Filter, X,
-  Users, Lock, LogOut, Eye, EyeOff
+  Users, Lock, LogOut, Eye, EyeOff, GraduationCap
 } from 'lucide-react';
 
 const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || '';
@@ -80,7 +80,14 @@ export default function Dashboard() {
 
       const configs = result.configs && result.configs.length > 0 ? result.configs : pageConfigs;
       if (result.configs && result.configs.length > 0) {
-        setPageConfigs(result.configs);
+        // Ensure 'อื่นๆ' is in the 'branch' page groups for catch-all logic
+        const updatedConfigs = result.configs.map((p: PageConfig) => {
+          if (p.id === 'branch' && !p.groups.includes('อื่นๆ')) {
+            return { ...p, groups: [...p.groups, 'อื่นๆ'] };
+          }
+          return p;
+        });
+        setPageConfigs(updatedConfigs);
       }
 
       // Organize flat data into page-based database
@@ -142,16 +149,20 @@ export default function Dashboard() {
   const filteredData = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return currentData.filter(p => {
-      const matchSearch = !q || [p.fname, p.lname, p.job, p.province, ...(p.skills || []), p.gen]
+      const matchSearch = !q || [p.fname, p.lname, p.job, p.province, p.edu, ...(p.skills || []), p.gen]
         .join(' ')
         .toLowerCase()
         .includes(q);
 
-      const matchGroup = !groupFilter || (
-        currentPageId === 'branch'
-          ? (p.province || '').trim() === groupFilter.trim()
-          : (p.group || '').trim() === groupFilter.trim()
-      );
+        const matchGroup = !groupFilter || (
+          currentPageId === 'branch'
+            ? (
+              groupFilter === 'อื่นๆ'
+                ? !currentPage.groups.filter(x => x !== 'อื่นๆ').some(g => (p.province || '').trim() === g.trim())
+                : (p.province || '').trim() === groupFilter.trim()
+            )
+            : (p.group || '').trim() === groupFilter.trim()
+        );
 
       return matchSearch && matchGroup;
     });
@@ -162,7 +173,13 @@ export default function Dashboard() {
     currentPage.groups.forEach(g => {
       const targetGroup = g.trim();
       if (currentPageId === 'branch') {
-        counts[g] = currentData.filter(p => (p.province || '').trim() === targetGroup).length;
+        if (targetGroup === 'อื่นๆ') {
+          // Count everyone whose province is not in any other group
+          const otherGroups = currentPage.groups.filter(x => x !== 'อื่นๆ').map(x => x.trim());
+          counts[g] = currentData.filter(p => !otherGroups.includes((p.province || '').trim())).length;
+        } else {
+          counts[g] = currentData.filter(p => (p.province || '').trim() === targetGroup).length;
+        }
       } else {
         counts[g] = currentData.filter(p => (p.group || '').trim() === targetGroup).length;
       }
@@ -849,6 +866,7 @@ export default function Dashboard() {
                 { label: 'Facebook', value: selectedPerson.fb, icon: <Users size={16} color={currentPage.color} /> },
                 { label: 'Line ID', value: selectedPerson.line, icon: <MessageCircle size={16} color={currentPage.color} /> },
                 { label: 'จังหวัด', value: selectedPerson.province, icon: <MapPin size={16} color={currentPage.color} /> },
+                { label: 'การศึกษา', value: selectedPerson.edu, icon: <GraduationCap size={16} color={currentPage.color} /> },
                 {
                   label: 'วันเดือนปีเกิด',
                   value: selectedPerson.gen ? new Date(selectedPerson.gen).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
